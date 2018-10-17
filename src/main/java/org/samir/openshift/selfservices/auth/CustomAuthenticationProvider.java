@@ -9,6 +9,9 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
+//import com.openshift.restclient.ClientBuilder;
+//import com.openshift.restclient.IClient;
+
 import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.openshift.api.model.Project;
@@ -29,11 +32,14 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 				.withUserName(username)
 				.withPassword(password)
 				.build();*/
+		
 		Config config = new ConfigBuilder()
 				.withMasterUrl("https://192.168.99.101:8443")
 				.withUsername(username)
 				.withPassword(password)
 				.withNoProxy("192.168.99.101")
+				.withWebsocketTimeout(3000)
+				.withApiVersion("v1")
 				.build();
 		
 		OpenShiftClient osClient = new DefaultOpenShiftClient(config);
