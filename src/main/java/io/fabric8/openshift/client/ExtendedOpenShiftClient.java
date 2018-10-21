@@ -23,8 +23,8 @@ public class ExtendedOpenShiftClient extends DefaultOpenShiftClient {
 		this.delegate = new DefaultKubernetesClient(this.httpClient, config);
 	}
 
-	public MixedOperation<ClusterResourceQuota, ResourceQuotaList, DoneableResourceQuota, Resource<ResourceQuota, DoneableResourceQuota>> resourceQuotas() {
+	/*public MixedOperation<ClusterResourceQuota, ResourceQuotaList, DoneableResourceQuota, Resource<ResourceQuota, DoneableResourceQuota>> resourceQuotas() {
 		return delegate.resourceQuotas();
-	}
+	}*/
 
 }

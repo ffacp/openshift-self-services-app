@@ -7197,3 +7197,7 @@ button.close {
         display: none !important
     }
 }
+
+.right-padding {
+	padding-right: 5px
+}
