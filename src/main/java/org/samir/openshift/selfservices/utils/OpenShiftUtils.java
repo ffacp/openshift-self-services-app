@@ -7,8 +7,10 @@ import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.openshift.client.DefaultOpenShiftClient;
 import io.fabric8.openshift.client.OpenShiftClient;
+import lombok.Getter;
 
 @Component
+@Getter
 public class OpenShiftUtils {
 
 	@Value("${ocp.master.url}")

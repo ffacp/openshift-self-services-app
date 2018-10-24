@@ -36,15 +36,13 @@
 		</c:if>
 
 	</div>
-
+	
 	<div class="container">
-
-		<form:form method="POST" action="${contextPath}/new-project" modelAttribute="project" class="form-signin">
-			<h2 class="form-heading">New Project</h2>
-			
-			<table class="input-group">
+		<h2 class="form-heading">New Project</h2>
+		<spring:url value="/projects" var="projectActionUrl" />
+		<form:form class="form-horizontal" method="post" modelAttribute="project" action="${projectActionUrl}">
 				
-				<c:if test="${not empty errors}">
+				<%-- <c:if test="${not empty errors}">
 					<tr>
 						<td colspan="2">
 							<ul class="bg-danger">
@@ -54,34 +52,70 @@
 							</ul>
 						</td>
 					</tr>
-				</c:if>
-				
-                <tr>
-                    <td><form:label path="name" class="control-label" required="required">Name</form:label></td>
-                    <td><form:input path="name" class="form-control" autofocus="autofocus" required="required"/></td>
-                </tr>
-                <tr>
-                    <td><form:label path="displayName" class="right-padding">Display Name</form:label></td>
-                    <td><form:input path="displayName" class="form-control"/></td>
-                </tr>
-                <tr>
-                    <td><form:label path="description">Description</form:label></td>
-                    <td><form:textarea path="description" class="form-control"/></td>
-                </tr>
-                <tr>
-                    <td><form:label path="quotaId">Quota Id</form:label></td>
-                    <td><form:input path="quotaId" class="form-control" required="required"/></td>
-                </tr>
-                <tr>
-                    <td><form:label path="quotaOwner">Quota Owner</form:label></td>
-                    <td><form:input path="quotaOwner" class="form-control" required="required"/></td>
-                </tr>
-                
-                <tr>
-                    <td><input class="btn btn-lg btn-primary" type="submit" value="Create"/></td>
-                </tr>
-            </table>
-
+				</c:if> --%>
+			
+			<spring:bind path="name">
+				<div class="form-group ${status.error ? 'has-error' : ''}">
+					<label class="col-sm-2 control-label">Name</label>
+					<div class="col-sm-10">
+						<form:input path="name" type="text" class="form-control " id="name" placeholder="Name" autofocus="autofocus" required="required" />
+						<form:errors path="name" class="control-label" />
+					</div>
+				</div>
+			</spring:bind>	
+			
+            <spring:bind path="displayName">
+				<div class="form-group ${status.error ? 'has-error' : ''}">
+					<label class="col-sm-2 control-label">Display Name</label>
+					<div class="col-sm-10">
+						<form:input path="displayName" type="text" class="form-control " id="displayName" placeholder="displayName" />
+						<form:errors path="displayName" class="control-label" />
+					</div>
+				</div>
+			</spring:bind>
+			
+			<spring:bind path="description">
+				<div class="form-group ${status.error ? 'has-error' : ''}">
+					<label class="col-sm-2 control-label">Description</label>
+					<div class="col-sm-10">
+						<form:textarea path="description" type="text" class="form-control " id="description" placeholder="description" />
+						<form:errors path="description" class="control-label" />
+					</div>
+				</div>
+			</spring:bind>
+			
+			<spring:bind path="quotaId">
+				<div class="form-group ${status.error ? 'has-error' : ''}">
+					<label class="col-sm-2 control-label">Quota Id</label>
+					<div class="col-sm-10">
+						<form:input path="quotaId" type="text" class="form-control " id="quotaId" placeholder="quotaId" required="required" />
+						<form:errors path="quotaId" class="control-label" />
+					</div>
+				</div>
+			</spring:bind>
+			
+			<spring:bind path="quotaOwner">
+				<div class="form-group ${status.error ? 'has-error' : ''}">
+					<label class="col-sm-2 control-label">Quota Owner</label>
+					<div class="col-sm-10">
+						<form:input path="quotaOwner" type="text" class="form-control " id="quotaOwner" placeholder="quotaOwner" required="required" />
+						<form:errors path="quotaOwner" class="control-label" />
+					</div>
+				</div>
+			</spring:bind>
+			
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-10">
+					<%-- <c:choose>
+						<c:when test="${project['new']}"> --%>
+							<button type="submit" class="btn-lg btn-primary pull-right">Add</button>
+						<%-- </c:when>
+						<c:otherwise>
+							<button type="submit" class="btn-lg btn-primary pull-right">Update</button>
+						</c:otherwise>
+					</c:choose> --%>
+				</div>
+			</div>
 		</form:form>
 
 	</div>

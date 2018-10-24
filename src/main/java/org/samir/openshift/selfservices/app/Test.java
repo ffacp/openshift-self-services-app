@@ -9,7 +9,7 @@ import io.fabric8.openshift.client.OpenShiftClient;
 
 public class Test {
 
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 		
 		Config config = new ConfigBuilder()
 				.withMasterUrl("https://sb1ocpconsole.belldev.dev.bce.ca:8443")
@@ -20,10 +20,6 @@ public class Test {
 				.build();
 		
 		OpenShiftClient client = new DefaultOpenShiftClient(config);
-		
-		
-//		
-//		KubernetesClient client = new DefaultKubernetesClient(config);
 
 		ProjectList myNs = client.projects().list();
 		
@@ -33,12 +29,12 @@ public class Test {
 		
 	
 		
-		/*Template t = client.templates().load("").process(arg0) get();
+		Template t = client.templates().load("").process(arg0) get();
 		
 		client.templates().createOrReplace(t);
 		
 		client.templates().inNamespace("thisisatest").withName("eap6-basic-sti").process();
 		
-		new TemplateBuilder(t).withParameters(new Parameter()).build();*/
-	}
+		new TemplateBuilder(t).withParameters(new Parameter()).build();
+	}*/
 }

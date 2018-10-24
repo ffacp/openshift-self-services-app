@@ -1,5 +1,7 @@
 package org.samir.openshift.selfservices.dto;
 
+import java.util.Date;
+
 import javax.validation.constraints.Pattern;
 
 import org.hibernate.validator.constraints.Length;
@@ -15,6 +17,8 @@ public class Project {
 	private String name;
 	private String displayName;
 	private String description;
+	private String requester;
+	private Date createdOn;
 
 	@NotBlank
 	@Pattern(regexp = "O-(AD-DEV|WY-UAT|DO-UAT|WY-PROD|DO-PROD)-.[0-9]{1,5}", message = "Invalid Quota ID Format")
@@ -22,4 +26,7 @@ public class Project {
 
 	@NotBlank
 	private String quotaOwner;
+	
+	private String status;
+	private String url;
 }
