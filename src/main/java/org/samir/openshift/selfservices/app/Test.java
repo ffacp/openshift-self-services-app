@@ -27,14 +27,24 @@ public class Test {
 			System.out.println(ns.getMetadata().getName());
 		}
 		
+		Map<String,String> parameters = new HashMap<>();
+		parameters.put("PROJECT_NAME", project.getName());
+		parameters.put("PROJECT_DISPLAYNAME", project.getDisplayName());
+		parameters.put("PROJECT_DESCRIPTION", project.getDescription());
+		parameters.put("PROJECT_REQUESTING_USER", (String) WebUtils.getSessionAttribute("username"));
+		parameters.put("QUOTA_ID", project.getQuotaId());
+		parameters.put("QUOTA_OWNER", project.getQuotaOwner());
+		
+		KubernetesList l = openShiftUtils.getSystemClient().templates()
+		.load(ProjectsService.class.getResourceAsStream("/project-template.yaml"))
+		.process(parameters);
+		
+		KubernetesList l = openShiftUtils.getSystemClient().templates().inNamespace("default")
+		.withName("project-request").process(parameters);
+		
+		openShiftUtils.getSystemClient().lists().create(l);
 	
 		
-		Template t = client.templates().load("").process(arg0) get();
-		
-		client.templates().createOrReplace(t);
-		
-		client.templates().inNamespace("thisisatest").withName("eap6-basic-sti").process();
-		
-		new TemplateBuilder(t).withParameters(new Parameter()).build();
+	
 	}*/
 }

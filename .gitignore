@@ -10,6 +10,7 @@ tmp/
 # ---> Java
 *.class
 target/
+oc*
 
 # ---> ackage Files
 *.jar
