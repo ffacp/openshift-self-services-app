@@ -8,6 +8,7 @@
 	<name>OpenShift Sefl-Services App</name>
 	<description>OpenShift Sefl-Services App - Spring Boot/MVC</description>
 	<packaging>jar</packaging>
+
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
@@ -16,7 +17,8 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<java.version>1.7</java.version>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<java.version>1.8</java.version>
 	</properties>
 
 	<dependencies>
@@ -29,6 +31,12 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-taglibs</artifactId>
+		</dependency>
+
 
 		<!-- <dependency> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-starter-data-jpa</artifactId> 
 			</dependency> <dependency> <groupId>org.hsqldb</groupId> <artifactId>hsqldb</artifactId> 
@@ -57,7 +65,7 @@
 		<dependency>
 			<groupId>io.fabric8</groupId>
 			<artifactId>openshift-client</artifactId>
-			<version>4.0.3</version>
+			<version>4.1.0</version>
 		</dependency>
 
 		<dependency>
@@ -68,7 +76,13 @@
 		</dependency>
 
 	</dependencies>
+
 	<build>
+
+		<!-- <resources> <resource> <directory>src/main/resources</directory> <includes> 
+			<include>**/*</include> </includes> </resource> <resource> <directory>src/main/webapp</directory> 
+			<includes> <include>**/*</include> </includes> </resource> </resources> -->
+
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
