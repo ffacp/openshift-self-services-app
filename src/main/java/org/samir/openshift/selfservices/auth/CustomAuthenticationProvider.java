@@ -1,5 +1,6 @@
 package org.samir.openshift.selfservices.auth;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Component;
 import io.fabric8.kubernetes.api.model.ObjectReference;
 import io.fabric8.kubernetes.client.KubernetesClientException;
 import io.fabric8.openshift.api.model.ClusterRoleBinding;
+import io.fabric8.openshift.api.model.Group;
 
 @Component
 public class CustomAuthenticationProvider implements AuthenticationProvider {
@@ -52,14 +54,25 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 		return authentication.equals(UsernamePasswordAuthenticationToken.class);
 	}
 	
-	/*private void getUserGroups(String username) {
-		List<String> userGroups = openShiftUtils.getSystemClient().users().withName(username).get().getGroups();
-	}*/
+	private List<String> getUserGroups(String username) {
+		List<String> userGroups = new ArrayList<>();
+		List<Group> groups = openShiftUtils.getSystemClient().groups().list().getItems();
+		
+		if(groups != null && groups.size() > 0) {
+			for (Group group : groups) {
+				if(group.getUsers().contains(username)) {
+					userGroups.add(group.getMetadata().getName());
+				}
+			}
+		}
+			
+		return userGroups;
+	}
 	
 	private Set<GrantedAuthority> getUserPrivileges(String username) {
 		Set<GrantedAuthority> authorities = new HashSet<>();
 		
-		List<String> userGroups = openShiftUtils.getSystemClient().users().withName(username).get().getGroups();
+		List<String> userGroups = getUserGroups(username);
 		WebUtils.setSessionAttribute("userGroups", userGroups);
 		
 		List<ClusterRoleBinding> roles = openShiftUtils.getSystemClient().clusterRoleBindings().inAnyNamespace().list().getItems();

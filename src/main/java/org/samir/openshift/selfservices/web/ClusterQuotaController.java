@@ -1,16 +1,20 @@
 package org.samir.openshift.selfservices.web;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.samir.openshift.selfservices.dto.ClusterResourceQuotaDto;
-import org.samir.openshift.selfservices.dto.ProjectDto;
-import org.samir.openshift.selfservices.svc.ClusterQuotasServices;
-import org.samir.openshift.selfservices.svc.ProjectsService;
+import org.samir.openshift.selfservices.map.ClusterQuotaMapper;
+import org.samir.openshift.selfservices.svc.ClusterQuotasService;
+import org.samir.openshift.selfservices.svc.UsersService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,13 +22,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import io.fabric8.openshift.api.model.ClusterResourceQuota;
+
 @Controller
 public class ClusterQuotaController {
 
 	private final static Logger log = LoggerFactory.getLogger(ClusterQuotaController.class);
 
 	@Autowired
-	private ClusterQuotasServices clusterQuotasServices;
+	private ClusterQuotaMapper clusterQuotaMapper;
+	
+	@Autowired
+	private ClusterQuotasService clusterQuotasServices;
+	
+	@Autowired
+	private UsersService usersService;
 
 	/* =====================================================
 	 *       GET
@@ -33,14 +45,16 @@ public class ClusterQuotaController {
 	@RequestMapping(value = {"/quotas" }, method = RequestMethod.GET)
 	public String getQuotas(Model model) {
 		log.info("Get quotas");
-		model.addAttribute("quotas", clusterQuotasServices.getClusterResourceQuotas());
+		List<ClusterResourceQuota> quotas = clusterQuotasServices.getClusterResourceQuotas();
+		List<ClusterResourceQuotaDto> quotaDtos = clusterQuotaMapper.map(quotas);
+		model.addAttribute("quotas", quotaDtos);
 		return "quotas/list";
 	}
 	
 	/*@RequestMapping(value = "/quotas/{id}", method = RequestMethod.GET)
-	public String getProject(@PathVariable("id") int id, Model model) {
+	public String getQuota(@PathVariable("id") int id, Model model) {
 
-		return "projects/view";
+		return "quotas/view";
 	}*/
 
 	
@@ -58,58 +72,126 @@ public class ClusterQuotaController {
 	/* =====================================================
 	 *       UPDATE FORM
 	 * =====================================================*/
-	/*@RequestMapping(value = "/projects/{id}/update", method = RequestMethod.GET)
-	public String updateProject(@PathVariable("id") int id, Model model) {
+	@RequestMapping(value = "/quotas/{name}/update", method = RequestMethod.GET)
+	public String updateQuota(@PathVariable("name") String name, Model model) {
+		log.info("Edit quota form");
+		ClusterResourceQuota ocQuota = clusterQuotasServices.getClusterResourceQuota(name);
+		ClusterResourceQuotaDto quota = clusterQuotaMapper.map(ocQuota);
+		model.addAttribute("quota", quota);
+		return "quotas/edit";
 
-		return "projects/edit";
-
-	}*/
+	}
 	
 	/* =====================================================
 	 *       SAVE CHANGES
 	 * =====================================================*/
 	@RequestMapping(value = { "/quotas" }, method = RequestMethod.POST)
-	public String createQuota(@Valid @ModelAttribute("quota") ClusterResourceQuotaDto quota, BindingResult result, 
+	public String saveQuota(@Valid @ModelAttribute("quota") ClusterResourceQuotaDto quota, BindingResult result, 
 			Model model, final RedirectAttributes redirectAttributes) {
-		log.info("Create quota : {}", quota);
 		if (result.hasErrors()) {
 			log.warn("Quota validation erros: {}", result.getAllErrors());
 			return "quotas/edit";
 		} else {
-			try {
-				ClusterResourceQuotaDto ocQuota = clusterQuotasServices.getClusterResourceQuota(quota.getName());
-				
-				if(ocQuota != null) {
-					model.addAttribute("css", "danger");
-					model.addAttribute("msg", "Quota " + quota.getName() + " already exist!");
-					return "quotas/edit";
-				}
-				
-				clusterQuotasServices.createQuota(quota);
-				redirectAttributes.addFlashAttribute("css", "success");
-				redirectAttributes.addFlashAttribute("msg", "Quota created successfully!");
-			} catch (Exception e) {
-				model.addAttribute("css", "danger");
-				model.addAttribute("msg", e.getMessage());
-				return "quotas/edit";
+			if (quota.getCreatedOn() == null) {
+				return createQuota(quota, result, model, redirectAttributes);
+			} else {
+				return updateQuota(quota, result, model, redirectAttributes);
 			}
 		}
-		return "redirect:/quotas";
+	}
+	
+	private String createQuota(ClusterResourceQuotaDto quota, BindingResult result, Model model,
+			final RedirectAttributes redirectAttributes) {
+
+		log.info("Creating new quota : {}", quota);
+		try {
+			List<String> errors = new ArrayList<>();
+			if (clusterQuotasServices.getClusterResourceQuota(quota.getName()) != null) {
+				errors.add("Quota " + quota.getName() + " aleady exist!");
+			}
+			
+			if(usersService.getUser(quota.getOwner()) == null) {
+				errors.add("User " + quota.getOwner() + " doesn't exist!");
+			}
+
+			if (errors.size() > 0) {
+				model.addAttribute("css", "danger");
+				model.addAttribute("msg", StringUtils.collectionToDelimitedString(errors, "<br>"));
+				return "quotas/edit";
+			} else {
+				ClusterResourceQuota ocQuota = clusterQuotaMapper.map(quota);
+				clusterQuotasServices.createQuota(ocQuota);
+				
+				redirectAttributes.addFlashAttribute("css", "success");
+				redirectAttributes.addFlashAttribute("msg", "Quota created successfully!");
+				return "redirect:/quotas";
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			
+			model.addAttribute("css", "danger");
+			model.addAttribute("msg", e.getMessage());
+			return "quotas/edit";
+		}
+	}
+	
+	private String updateQuota(ClusterResourceQuotaDto quota, BindingResult result, Model model,
+			final RedirectAttributes redirectAttributes) {
+
+		log.info("Updating Quota : {}", quota);
+		try {
+			List<String> errors = new ArrayList<>();
+			ClusterResourceQuota ocQuota = clusterQuotasServices.getClusterResourceQuota(quota.getName());
+			if (ocQuota == null) {
+				errors.add("Quota " + quota.getName() + " doesn't exist!");
+			}
+			
+			if(usersService.getUser(quota.getOwner()) == null) {
+				errors.add("User " + quota.getOwner() + " doesn't exist!");
+			}
+
+			if (errors.size() > 0) {
+				model.addAttribute("css", "danger");
+				model.addAttribute("msg", StringUtils.collectionToDelimitedString(errors, "<br>"));
+				return "quotas/edit";
+			} else {
+				clusterQuotaMapper.map(quota, ocQuota);
+				clusterQuotasServices.updateQuota(ocQuota);
+				
+				redirectAttributes.addFlashAttribute("css", "success");
+				redirectAttributes.addFlashAttribute("msg", "Quota updated successfully!");
+				return "redirect:/quotas";
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+						
+			model.addAttribute("css", "danger");
+			model.addAttribute("msg", e.getMessage());
+			return "quotas/edit";
+		}
 	}
 	
 	/* =====================================================
 	 *       DELETE
 	 * =====================================================*/
-	/*@RequestMapping(value = "/projects/{name}/delete", method = RequestMethod.POST)
-	public String deleteProject(@PathVariable("name") String name, final RedirectAttributes redirectAttributes) {
+	@RequestMapping(value = "/quotas/{name}/delete", method = RequestMethod.POST)
+	public String deleteQuota(@PathVariable("name") String name, final RedirectAttributes redirectAttributes) {
 
-		log.info("Delete project: {}", name);
-		projectsService.deleteProject(name);
-		
-		redirectAttributes.addFlashAttribute("css", "success");
-		redirectAttributes.addFlashAttribute("msg", "Project is deleted!");
-		
-		return "redirect:/projects";
+		log.info("Delete quota: {}", name);
+		try {
+			clusterQuotasServices.deleteQuota(name);
+	
+			redirectAttributes.addFlashAttribute("css", "success");
+			redirectAttributes.addFlashAttribute("msg", "Quota is deleted!");
+		} catch (Exception e) {
+			e.printStackTrace();
+			redirectAttributes.addFlashAttribute("css", "danger");
+			redirectAttributes.addFlashAttribute("msg", e.getMessage());
+		}
 
-	}*/
+		return "redirect:/quotas";
+
+	}
 }

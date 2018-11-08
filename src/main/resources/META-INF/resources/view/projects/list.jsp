@@ -7,7 +7,15 @@
 <html lang="en">
 
 <jsp:include page="../fragments/header.jsp" />
+<script type="text/javascript">
+function deleteProject(projectName) {
+	if(confirm("Are you really want to delete project " + projectName + "?")){
+		deleteUrl = "/projects/" + projectName + "/delete?${_csrf.parameterName}=${_csrf.token}";
+		post(deleteUrl);
+	}
+}
 
+</script>
 <body>
 	
 	<div class="container">
@@ -66,11 +74,11 @@
 							<spring:url value="/projects/${p.name}/update" var="updateUrl" />
 							<spring:url value="${p.url}" var="ocpUrl" />
 							
-							<button class="btn btn-info" onclick="location.href='${viewUrl}'">View</button>
-							<button class="btn btn-primary" onclick="location.href='${updateUrl}'">Edit</button>
+							<%-- <button class="btn btn-info" onclick="location.href='${viewUrl}'">View</button>
+							<button class="btn btn-primary" onclick="location.href='${updateUrl}'">Edit</button> --%>
 							
 							<c:if test="${not empty p.requester}">
-								<button class="btn btn-danger" onclick="this.disabled=true;post('${deleteUrl}')">Delete</button>
+								<button class="btn btn-danger" onclick="deleteProject('${p.name}')">Delete</button>
 							</c:if>
 							
 							<%-- <button class="btn btn-info" onclick="location.href='${ocpUrl}'">Go To</button> --%>

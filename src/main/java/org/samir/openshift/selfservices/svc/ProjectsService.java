@@ -1,12 +1,11 @@
 package org.samir.openshift.selfservices.svc;
 
-import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.TimeZone;
 
 import org.samir.openshift.selfservices.utils.OpenShiftUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 
 import io.fabric8.openshift.api.model.Project;
 
@@ -15,16 +14,17 @@ public class ProjectsService {
 
 	@Autowired
 	private OpenShiftUtils openShiftUtils;
-	
-	private SimpleDateFormat format;
-	
-	public ProjectsService() {
-		format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-		format.setTimeZone(TimeZone.getTimeZone("GMT"));
-	}
 
 	public Project getProject(String name) {
-		return openShiftUtils.getSystemClient().projects().withName(name).get();
+		try {
+			return openShiftUtils.getSystemClient().projects().withName(name).get();
+		} catch (HttpClientErrorException e) {
+			if(e.getMessage().contains("404")) {
+				return null;
+			} else {
+				throw e;
+			}
+		}
 	}
 	
 	public List<Project> getProjects() {

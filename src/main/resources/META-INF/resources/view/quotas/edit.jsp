@@ -8,7 +8,37 @@
 <html lang="en">
 
 <jsp:include page="../fragments/header.jsp" />
+<script type="text/javascript">
+$(document).ready(function(){
+	
+	showHideAdancedFeilds();
+	
+	$("#showAdvanced").change(showHideAdancedFeilds);	
+    $("#cpuLimit").change(calcCPURequest);
+    $("#memoryLimit").change(calcMemoryRequest);
+});
 
+function calcCPURequest(){
+	var cpuLimit = $("#cpuLimit").val();
+	var cpuRequest = Math.ceil(cpuLimit * .2);
+	$("#cpuRequest").val(cpuRequest);
+}
+
+function calcMemoryRequest(){
+	var memoryLimit = $("#memoryLimit").val();
+	var memoryRequest = Math.ceil(memoryLimit * .8);
+	$("#memoryRequest").val(memoryRequest);
+}
+
+function showHideAdancedFeilds(){
+	var showAdvanced = $('#showAdvanced').is(':checked');
+	if(showAdvanced == true){
+		$(".advanced").show();
+	}else{
+		$(".advanced").hide();
+	}
+}
+</script>
 <body>
 	
 	<div class="container">
@@ -34,22 +64,28 @@
 		<spring:url value="/quotas" var="quotaActionUrl" />
 		<form:form class="form-horizontal" method="post" modelAttribute="quota" action="${quotaActionUrl}">
 			<fieldset>
-				<legend>quota Info:</legend>
+				
+				<legend>Quota Info:</legend>
 				<spring:bind path="name">
 					<div class="form-group ${status.error ? 'has-error' : ''}">
-						<label class="col-sm-2 control-label">Name (Id)</label>
-						<div class="col-sm-10">
-							<form:input path="name" type="text" class="form-control " id="name" placeholder="Name" autofocus="autofocus" required="required" />
+						<label class="col-sm-2 control-label">Quota Id</label>
+						<div class="col-sm-10" style="width: 400px">
+							<form:input path="name" type="text" class="form-control " id="name" placeholder="o-ad-dev-1" autofocus="autofocus" required="required" 
+								readonly="${!empty quota.createdOn}" />
 							<form:errors path="name" class="control-label" />
 						</div>
 					</div>
-				</spring:bind>	
+				</spring:bind>
+				
+				<spring:bind path="createdOn">
+					<form:hidden path="createdOn" class="form-control " id="createdOn" />
+				</spring:bind>
 				
 	            <spring:bind path="owner">
 					<div class="form-group ${status.error ? 'has-error' : ''}">
 						<label class="col-sm-2 control-label">Owner</label>
-						<div class="col-sm-10">
-							<form:input path="owner" type="text" class="form-control " id="owner" placeholder="owner" required="required" />
+						<div class="col-sm-10" style="width: 400px">
+							<form:input path="owner" type="text" class="form-control " id="owner" placeholder="username" required="required" />
 							<form:errors path="owner" class="control-label" />
 						</div>
 					</div>
@@ -58,69 +94,75 @@
 				<spring:bind path="ownerEmail">
 					<div class="form-group ${status.error ? 'has-error' : ''}">
 						<label class="col-sm-2 control-label">Owner Email</label>
-						<div class="col-sm-10">
-							<form:input path="ownerEmail" type="text" class="form-control " id="ownerEmail" placeholder="ownerEmail" required="required" />
+						<div class="col-sm-10" style="width: 400px">
+							<form:input path="ownerEmail" type="text" class="form-control " id="ownerEmail" placeholder="Owner Email" required="required" />
 							<form:errors path="ownerEmail" class="control-label" />
 						</div>
 					</div>
 				</spring:bind>
 				
-				<spring:bind path="cpuLimit">
+				<legend>Compute:</legend>
+				
+				<div class="form-group">
+					<label class="col-sm-2 control-label">Show Advanced</label>
+					<div class="col-sm-10" style="width: 400px">
+						<input type="checkbox" name="showAdvanced" id="showAdvanced" /> 
+					</div>
+				</div>
+				
+				<div class="form-group ${status.error ? 'has-error' : ''}">
+					<spring:bind path="cpuLimit.amount">
+						<label class="col-sm-2 control-label">CPU Limit (Cores)</label>
+						<div class="col-sm-10" style="width: 400px">
+							<form:input path="cpuLimit.amount" type="number" class="form-control " id="cpuLimit" placeholder="10" required="required" />
+							<form:errors path="cpuLimit.amount" class="control-label" />
+						</div>					
+					</spring:bind>
+				
+					<spring:bind path="cpuRequest.amount">
+						<label class="col-sm-2 control-label advanced">CPU Request (Cores)</label>
+						<div class="col-sm-10 advanced" style="width: 400px">
+							<form:input path="cpuRequest.amount" type="number" class="form-control " id="cpuRequest" placeholder="2" required="required" />
+							<form:errors path="cpuRequest.amount" class="control-label" />
+						</div>
+					</spring:bind>
+				</div>
+				
+				<div class="form-group ${status.error ? 'has-error' : ''}">
+					<spring:bind path="memoryLimit.amount">					
+						<label class="col-sm-2 control-label">Memory Limit (Gi)</label>
+						<div class="col-sm-10" style="width: 400px">
+							<form:input path="memoryLimit.amount" type="number" class="form-control " id="memoryLimit" placeholder="10" required="required" />
+							<form:errors path="memoryLimit.amount" class="control-label" />
+						</div>
+					</spring:bind>
+				
+					<spring:bind path="memoryRequest.amount">
+						<label class="col-sm-2 control-label advanced">Memory Request (Gi)</label>
+						<div class="col-sm-10 advanced" style="width: 400px">
+							<form:input path="memoryRequest.amount" type="number" class="form-control " id="memoryRequest" placeholder="8" required="required" />
+							<form:errors path="memoryRequest.amount" class="control-label" />
+						</div>
+					</spring:bind>
+				</div>
+				
+				<legend>Storage:</legend>
+				<spring:bind path="glusterStorage.amount">
 					<div class="form-group ${status.error ? 'has-error' : ''}">
-						<label class="col-sm-2 control-label">CPU Limit</label>
-						<div class="col-sm-10">
-							<form:input path="cpuLimit" type="text" class="form-control " id="cpuLimit" placeholder="cpuLimit" required="required" />
-							<form:errors path="cpuLimit" class="control-label" />
+						<label class="col-sm-2 control-label">Gluster Storage (Gi)</label>
+						<div class="col-sm-10" style="width: 400px">
+							<form:input path="glusterStorage.amount" type="number" class="form-control " id="glusterStorage" placeholder="50" required="required" />
+							<form:errors path="glusterStorage.amount" class="control-label" />
 						</div>
 					</div>
 				</spring:bind>
 				
-				<spring:bind path="cpuRequest">
+				<spring:bind path="blockStorage.amount">
 					<div class="form-group ${status.error ? 'has-error' : ''}">
-						<label class="col-sm-2 control-label">CPU Request</label>
-						<div class="col-sm-10">
-							<form:input path="cpuRequest" type="text" class="form-control " id="cpuRequest" placeholder="cpuRequest" required="required" />
-							<form:errors path="cpuRequest" class="control-label" />
-						</div>
-					</div>
-				</spring:bind>
-				
-				<spring:bind path="memoryLimit">
-					<div class="form-group ${status.error ? 'has-error' : ''}">
-						<label class="col-sm-2 control-label">Memory Limit</label>
-						<div class="col-sm-10">
-							<form:input path="memoryLimit" type="text" class="form-control " id="memoryLimit" placeholder="memoryLimit" required="required" />
-							<form:errors path="memoryLimit" class="control-label" />
-						</div>
-					</div>
-				</spring:bind>
-				
-				<spring:bind path="memoryRequest">
-					<div class="form-group ${status.error ? 'has-error' : ''}">
-						<label class="col-sm-2 control-label">Memory Request</label>
-						<div class="col-sm-10">
-							<form:input path="memoryRequest" type="text" class="form-control " id="memoryRequest" placeholder="memoryRequest" required="required" />
-							<form:errors path="memoryRequest" class="control-label" />
-						</div>
-					</div>
-				</spring:bind>
-				
-				<spring:bind path="glusterStorage">
-					<div class="form-group ${status.error ? 'has-error' : ''}">
-						<label class="col-sm-2 control-label">Gluster Storage</label>
-						<div class="col-sm-10">
-							<form:input path="glusterStorage" type="text" class="form-control " id="glusterStorage" placeholder="glusterStorage" required="required" />
-							<form:errors path="glusterStorage" class="control-label" />
-						</div>
-					</div>
-				</spring:bind>
-				
-				<spring:bind path="blockStorage">
-					<div class="form-group ${status.error ? 'has-error' : ''}">
-						<label class="col-sm-2 control-label">Block Storage</label>
-						<div class="col-sm-10">
-							<form:input path="blockStorage" type="text" class="form-control " id="blockStorage" placeholder="blockStorage" required="required" />
-							<form:errors path="blockStorage" class="control-label" />
+						<label class="col-sm-2 control-label advanced">Block Storage (Gi)</label>
+						<div class="col-sm-10 advanced" style="width: 400px">
+							<form:input path="blockStorage.amount" type="number" class="form-control " id="blockStorage" placeholder="0" required="required" />
+							<form:errors path="blockStorage.amount" class="control-label" />
 						</div>
 					</div>
 				</spring:bind>
@@ -128,7 +170,7 @@
 			</fieldset>
 			<spring:url value="/quotas" var="quotasUrl" />
 			<div class="form-group">
-				<div class="col-sm-offset-2 col-sm-10" align="right">
+				<div class="col-sm-offset-2 col-sm-10" style="width: 400px" align="right">
 					<button type="button" class="btn-lg btn-danger" onclick="location.href='${quotasUrl}'">Cancel</button>
 					<c:choose>
 						<c:when test="${empty quota.createdOn}">

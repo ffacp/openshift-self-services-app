@@ -26,7 +26,6 @@ public class ProjectDto extends BaseDTO {
 	private Date createdOn;
 
 	@NotBlank
-	@Pattern(regexp = "o-(ad-dev|wy-uat|do-uat|wy-prod|do-prod)-.[0-9]{1,5}", message = "Invalid Quota ID Format")
 	private String quotaId;
 
 	@NotBlank
@@ -42,5 +41,17 @@ public class ProjectDto extends BaseDTO {
 	public ProjectDto() {
 		super();
 		this.requester = (String) WebUtils.getSessionAttribute("username");
+	}
+	
+	public void setName(String name) {
+		this.name = (name != null) ? name.toLowerCase() : null;
+	}
+	
+	public void setQuotaId(String quotaId) {
+		this.quotaId = (quotaId != null) ? quotaId.toLowerCase() : null;
+	}
+	
+	public void setQuotaOwner(String quotaOwner) {
+		this.quotaOwner = (quotaOwner != null) ? quotaOwner.toLowerCase() : null;
 	}
 }

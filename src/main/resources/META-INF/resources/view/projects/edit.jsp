@@ -38,7 +38,7 @@
 				<spring:bind path="name">
 					<div class="form-group ${status.error ? 'has-error' : ''}">
 						<label class="col-sm-2 control-label">Name</label>
-						<div class="col-sm-10">
+						<div class="col-sm-10" style="width: 400px">
 							<form:input path="name" type="text" class="form-control " id="name" placeholder="Name" autofocus="autofocus" required="required" />
 							<form:errors path="name" class="control-label" />
 						</div>
@@ -48,7 +48,7 @@
 	            <spring:bind path="displayName">
 					<div class="form-group ${status.error ? 'has-error' : ''}">
 						<label class="col-sm-2 control-label">Display Name</label>
-						<div class="col-sm-10">
+						<div class="col-sm-10" style="width: 400px">
 							<form:input path="displayName" type="text" class="form-control " id="displayName" placeholder="displayName" />
 							<form:errors path="displayName" class="control-label" />
 						</div>
@@ -58,7 +58,7 @@
 				<spring:bind path="description">
 					<div class="form-group ${status.error ? 'has-error' : ''}">
 						<label class="col-sm-2 control-label">Description</label>
-						<div class="col-sm-10">
+						<div class="col-sm-10" style="width: 400px">
 							<form:textarea path="description" type="text" class="form-control " id="description" placeholder="description" />
 							<form:errors path="description" class="control-label" />
 						</div>
@@ -68,7 +68,7 @@
 				<spring:bind path="quotaId">
 					<div class="form-group ${status.error ? 'has-error' : ''}">
 						<label class="col-sm-2 control-label">Quota Id</label>
-						<div class="col-sm-10">
+						<div class="col-sm-10" style="width: 400px">
 							<form:input path="quotaId" type="text" class="form-control " id="quotaId" placeholder="quotaId" required="required" />
 							<form:errors path="quotaId" class="control-label" />
 						</div>
@@ -78,7 +78,7 @@
 				<spring:bind path="quotaOwner">
 					<div class="form-group ${status.error ? 'has-error' : ''}">
 						<label class="col-sm-2 control-label">Quota Owner</label>
-						<div class="col-sm-10">
+						<div class="col-sm-10" style="width: 400px">
 							<form:input path="quotaOwner" type="text" class="form-control " id="quotaOwner" placeholder="quotaOwner" required="required" />
 							<form:errors path="quotaOwner" class="control-label" />
 						</div>
@@ -87,7 +87,7 @@
 			</fieldset>
 			<spring:url value="/projects" var="projectsUrl" />
 			<div class="form-group">
-				<div class="col-sm-offset-2 col-sm-10" align="right">
+				<div class="col-sm-offset-2 col-sm-10" style="width: 400px" align="right">
 					<button type="button" class="btn-lg btn-danger" onclick="location.href='${projectsUrl}'">Cancel</button>
 					<c:choose>
 						<c:when test="${empty project.createdOn}">

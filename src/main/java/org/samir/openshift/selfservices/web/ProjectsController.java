@@ -8,10 +8,11 @@ import javax.validation.Valid;
 import org.samir.openshift.selfservices.dto.ClusterResourceQuotaDto;
 import org.samir.openshift.selfservices.dto.ProjectDto;
 import org.samir.openshift.selfservices.dto.RoleBindingDto;
+import org.samir.openshift.selfservices.map.ClusterQuotaMapper;
 import org.samir.openshift.selfservices.map.LimitRangeMapper;
 import org.samir.openshift.selfservices.map.ProjectMapper;
 import org.samir.openshift.selfservices.map.RoleBindingMapper;
-import org.samir.openshift.selfservices.svc.ClusterQuotasServices;
+import org.samir.openshift.selfservices.svc.ClusterQuotasService;
 import org.samir.openshift.selfservices.svc.LimitRangesService;
 import org.samir.openshift.selfservices.svc.ProjectsService;
 import org.samir.openshift.selfservices.svc.RoleBindingsService;
@@ -44,12 +45,15 @@ public class ProjectsController {
 	
 	@Autowired
 	private LimitRangeMapper limitRangeMapper;
+	
+	@Autowired
+	private ClusterQuotaMapper clusterQuotaMapper;
 
 	@Autowired
 	private ProjectsService projectsService;
 
 	@Autowired
-	private ClusterQuotasServices clusterQuotasServices;
+	private ClusterQuotasService clusterQuotasServices;
 	
 	@Autowired
 	private RoleBindingsService roleBindingsService;
@@ -66,8 +70,8 @@ public class ProjectsController {
 	public String getProjects(Model model) {
 		log.info("Get projects");
 		List<Project> projects = projectsService.getProjects();
-		List<ProjectDto> projectsDto = projectMapper.map(projects);
-		model.addAttribute("projects", projectsDto);
+		List<ProjectDto> projectDtos = projectMapper.map(projects);
+		model.addAttribute("projects", projectDtos);
 		return "projects/list";
 	}
 
@@ -146,7 +150,7 @@ public class ProjectsController {
 				errors.add("Project " + project.getName() + " aleady exist!");
 			}
 
-			ClusterResourceQuotaDto quota = clusterQuotasServices.getClusterResourceQuota(project.getQuotaId());
+			ClusterResourceQuotaDto quota = clusterQuotaMapper.map(clusterQuotasServices.getClusterResourceQuota(project.getQuotaId()));
 
 			if (quota == null) {
 				errors.add("Quota " + project.getQuotaId() + " doesn't exist!");
@@ -209,10 +213,16 @@ public class ProjectsController {
 	public String deleteProject(@PathVariable("name") String name, final RedirectAttributes redirectAttributes) {
 
 		log.info("Delete project: {}", name);
-		projectsService.deleteProject(name);
-
-		redirectAttributes.addFlashAttribute("css", "success");
-		redirectAttributes.addFlashAttribute("msg", "Project is deleted!");
+		try {
+			projectsService.deleteProject(name);
+	
+			redirectAttributes.addFlashAttribute("css", "success");
+			redirectAttributes.addFlashAttribute("msg", "Project is deleted!");
+		} catch (Exception e) {
+			e.printStackTrace();
+			redirectAttributes.addFlashAttribute("css", "danger");
+			redirectAttributes.addFlashAttribute("msg", e.getMessage());
+		}
 
 		return "redirect:/projects";
 

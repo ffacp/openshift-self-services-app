@@ -8,7 +8,15 @@
 <html lang="en">
 
 <jsp:include page="../fragments/header.jsp" />
+<script type="text/javascript">
+function deleteQuota(quotaName) {
+	if(confirm("Are you really want to delete quota " + quotaName + "?")){
+		deleteUrl = "/quotas/" + quotaName + "/delete?${_csrf.parameterName}=${_csrf.token}";
+		post(deleteUrl);
+	}
+}
 
+</script>
 <body>
 	
 	<div class="container">
@@ -35,7 +43,7 @@
 		<table id="projects" class="table">
 			<thead>
 				<tr class="active" style="font-weight: bold;">
-					<td rowspan="2" style="vertical-align: middle;">Name(Id)</td>
+					<td rowspan="2" style="vertical-align: middle;">Quota Id</td>
 					<td rowspan="2" style="vertical-align: middle;">Owner</td>
 					<td rowspan="2" style="vertical-align: middle;">Created On</td>
 					<td rowspan="2" style="vertical-align: middle;">Expires On</td>
@@ -45,12 +53,12 @@
 					<td rowspan="2"></td>
 				</tr>
 				<tr class="active" style="font-weight: bold;">
-					<td>Request</td>
-					<td>Limit</td>
-					<td>Request</td>
-					<td>Limit</td>
-					<td>Gluster</td>
-					<td>Block</td>
+					<td align="center">Request</td>
+					<td align="center">Limit</td>
+					<td align="center">Request</td>
+					<td align="center">Limit</td>
+					<td align="center">Gluster</td>
+					<td align="center">Block</td>
 				</tr>
 			</thead>
 
@@ -71,12 +79,12 @@
 						<td><fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss" value="${q.createdOn}" /></td>
 						<td><fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss" value="${q.expireOn}" /></td>
 						
-						<td>${q.cpuRequest}</td>
-						<td>${q.cpuLimit}</td>
-						<td>${q.memoryRequest}</td>
-						<td>${q.memoryLimit}</td>
-						<td>${q.glusterStorage}</td>
-						<td>${q.blockStorage}</td>
+						<td align="center">${q.cpuRequest}</td>
+						<td align="center">${q.cpuLimit}</td>
+						<td align="center">${q.memoryRequest}</td>
+						<td align="center">${q.memoryLimit}</td>
+						<td align="center">${q.glusterStorage}</td>
+						<td align="center">${q.blockStorage}</td>
 						
 						<td align="right">
 							<spring:url value="/quotas/${q.name}" var="viewUrl" />
@@ -84,12 +92,12 @@
 							<spring:url value="/quotas/${q.name}/update" var="updateUrl" />
 							<%-- <spring:url value="${p.url}" var="ocpUrl" /> --%>
 							
-							<button class="btn btn-info" onclick="location.href='${viewUrl}'">View</button>
+							<%-- <button class="btn btn-info" onclick="location.href='${viewUrl}'">View</button> --%>
 							
 							
 							<security:authorize access="hasAuthority('cluster-admin')">
 								<button class="btn btn-primary" onclick="location.href='${updateUrl}'">Edit</button>
-								<button class="btn btn-danger" onclick="this.disabled=true;post('${deleteUrl}')">Delete</button>
+								<button class="btn btn-danger" onclick="deleteQuota('${q.name}')">Delete</button>
 							</security:authorize>
 							
 						</td>
