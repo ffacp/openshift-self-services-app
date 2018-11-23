@@ -44,6 +44,7 @@ public class ClusterQuotaMapper {
 			String expireOnDate = null;
 			
 			destination.setName(source.getMetadata().getName());
+			destination.setUid(source.getMetadata().getUid());
 			if(source.getMetadata().getAnnotations() != null) {
 				destination.setOwner(source.getMetadata().getAnnotations().get("openshift.io/quota-owner"));
 				destination.setOwnerEmail(source.getMetadata().getAnnotations().get("openshift.io/quota-owner-email"));

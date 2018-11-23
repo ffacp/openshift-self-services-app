@@ -14,6 +14,8 @@ public class ClusterResourceQuotaDto extends BaseDTO {
 
 	private static final long serialVersionUID = 1L;
 
+	private String uid;
+	
 	@NotBlank
 	@Pattern(regexp = "o-(ad-dev|wy-uat|do-uat|wy-prod|do-prod)-[0-9]{1,5}", message = "Invalid Quota ID Format")
 	private String name;

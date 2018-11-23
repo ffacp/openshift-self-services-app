@@ -52,7 +52,7 @@ function showHideAdancedFeilds(){
 		</c:if>
 		
 		<c:choose>
-			<c:when test="${empty quota.createdOn}">
+			<c:when test="${empty quota.uid}">
 				<h2 class="form-heading">New Quota</h2>
 			</c:when>
 			<c:otherwise>
@@ -71,14 +71,14 @@ function showHideAdancedFeilds(){
 						<label class="col-sm-2 control-label">Quota Id</label>
 						<div class="col-sm-10" style="width: 400px">
 							<form:input path="name" type="text" class="form-control " id="name" placeholder="o-ad-dev-1" autofocus="autofocus" required="required" 
-								readonly="${!empty quota.createdOn}" />
+								readonly="${!empty quota.uid}" />
 							<form:errors path="name" class="control-label" />
 						</div>
 					</div>
 				</spring:bind>
 				
-				<spring:bind path="createdOn">
-					<form:hidden path="createdOn" class="form-control " id="createdOn" />
+				<spring:bind path="uid">
+					<form:hidden path="uid" class="form-control " id="uid" />
 				</spring:bind>
 				
 	            <spring:bind path="owner">
@@ -173,7 +173,7 @@ function showHideAdancedFeilds(){
 				<div class="col-sm-offset-2 col-sm-10" style="width: 400px" align="right">
 					<button type="button" class="btn-lg btn-danger" onclick="location.href='${quotasUrl}'">Cancel</button>
 					<c:choose>
-						<c:when test="${empty quota.createdOn}">
+						<c:when test="${empty quota.uid}">
 							<button type="submit" class="btn-lg btn-primary">Add</button>
 						</c:when>
 						<c:otherwise>

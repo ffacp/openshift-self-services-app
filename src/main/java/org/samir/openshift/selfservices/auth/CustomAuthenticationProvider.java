@@ -40,6 +40,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 			
 			//Object roles = openShiftUtils.getSystemClient().groups().withName("").get().getUsers();
 		} catch (KubernetesClientException e) {
+			e.printStackTrace();
 			throw new BadCredentialsException(e.getMessage(), e);
 		}
 		

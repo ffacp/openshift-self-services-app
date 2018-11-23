@@ -92,7 +92,7 @@ public class ClusterQuotaController {
 			log.warn("Quota validation erros: {}", result.getAllErrors());
 			return "quotas/edit";
 		} else {
-			if (quota.getCreatedOn() == null) {
+			if (StringUtils.isEmpty(quota.getUid())) {
 				return createQuota(quota, result, model, redirectAttributes);
 			} else {
 				return updateQuota(quota, result, model, redirectAttributes);

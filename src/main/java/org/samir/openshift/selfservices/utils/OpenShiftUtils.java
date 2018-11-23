@@ -21,15 +21,24 @@ public class OpenShiftUtils {
 	
 	@Value("${ocp.system.oauth.token}")
 	private String oauthToken;
+	
+//	@Value("${ocp.proxy.http}")
+//	private String httpProxy;
+//	
+//	@Value("${ocp.proxy.https}")
+//	private String httpsProxy;
 
 	private OpenShiftClient systemClient;
 	
 	public OpenShiftClient getSystemClient() {
 		if(systemClient == null) {
 			Config config = new ConfigBuilder()
-					.withMasterUrl(masterURL)
-					.withOauthToken(oauthToken)
-					.withTrustCerts(trustCerts).build();
+					.withMasterUrl(masterURL.trim())
+					.withOauthToken(oauthToken.trim())
+					.withTrustCerts(trustCerts)
+//					.withHttpProxy(httpProxy)
+//					.withHttpsProxy(httpsProxy)
+					.build();
 
 			systemClient = new DefaultOpenShiftClient(config);
 
@@ -41,10 +50,13 @@ public class OpenShiftUtils {
 	
 	public void createUserClient(String username, String password) {
 		Config config = new ConfigBuilder()
-				.withMasterUrl(masterURL)
+				.withMasterUrl(masterURL.trim())
 				.withUsername(username)
 				.withPassword(password)
-				.withTrustCerts(trustCerts).build();
+				.withTrustCerts(trustCerts)
+//				.withHttpProxy(httpProxy)
+//				.withHttpsProxy(httpsProxy)
+				.build();
 
 		OpenShiftClient osClient = new DefaultOpenShiftClient(config);
 

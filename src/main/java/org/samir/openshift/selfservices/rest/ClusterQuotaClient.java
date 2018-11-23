@@ -95,19 +95,16 @@ public class ClusterQuotaClient {
 		return response.getBody();
 	}
 	
-	public ClusterResourceQuota delete(ClusterResourceQuota quota) {
+	public void delete(ClusterResourceQuota quota) {
 		RestTemplate restTemplate = new RestTemplate();
 		
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.set("Authorization", "Bearer " + oauthToken);
 
-		HttpEntity<ClusterResourceQuota> entity = new HttpEntity<>(quota, headers);
+		HttpEntity<ClusterResourceQuota> entity = new HttpEntity<>(headers);
 
-		ResponseEntity<ClusterResourceQuota> response = restTemplate.exchange(getUri() + "/" + quota.getMetadata().getName(),
-				HttpMethod.DELETE, entity, ClusterResourceQuota.class);
-
-		return response.getBody();
+		ResponseEntity<String> response = restTemplate.exchange(getUri() + "/" + quota.getMetadata().getName(),
+				HttpMethod.DELETE, entity, String.class);
 	}
-
 }
